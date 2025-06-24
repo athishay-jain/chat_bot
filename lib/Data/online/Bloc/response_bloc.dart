@@ -10,8 +10,13 @@ import 'package:http/http.dart' as http;
 class ResponseBloc extends Bloc<ResponseEvent,ResponseState>{
   ResponseBloc() : super(ResponseInitialState()){
     on<GetResponseEvent>((state,emit)async{
+      emit(ResponseLoadingState());
 ApiHelper api= ApiHelper();
-dynamic data =  api.getApi(qution: state.question);
+ResponseDataModel data = await api.getApi(question: state.question);
+if(data!=null){
+  String aiResponse = data.candidates[0].content.parts[0].text;
+  emit(ResponseLoadedState(response: aiResponse));
+}
     });
   }
 

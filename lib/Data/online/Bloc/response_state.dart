@@ -5,9 +5,10 @@ class ResponseInitialState extends ResponseState {}
 class ResponseLoadingState extends ResponseState {}
 
 class ResponseLoadedState extends ResponseState {
-  String response;
+ String response;
 
-  ResponseLoadedState({required this.response});
+
+  ResponseLoadedState({required this.response,});
 }
 
 class ResponseErrorState extends ResponseState {

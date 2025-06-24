@@ -24,7 +24,7 @@ class ContentModel {
 }
 
 class CandidatesModel {
-  List<ContentModel> content;
+  ContentModel content;
   String finishReason;
   double avgLogprobs;
 
@@ -35,12 +35,9 @@ class CandidatesModel {
   });
 
   factory CandidatesModel.fromMap(Map<String, dynamic> json) {
-    List<ContentModel> content = [];
-    for (Map<String, dynamic> eachContent in json["content"]) {
-      content.add(ContentModel.fromMap(eachContent));
-    }
+
     return CandidatesModel(
-      content: content,
+      content: ContentModel.fromMap(json["content"]),
       avgLogprobs: json["avgLogprobs"],
       finishReason: json['finishReason'],
     );
@@ -61,14 +58,14 @@ class PromptTokensDetailsModel {
   }
 }
 
-class CandidatesTokenDetails {
+class CandidatesTokensDetails {
   String modality;
   int tokenCount;
 
-  CandidatesTokenDetails({required this.modality, required this.tokenCount});
+  CandidatesTokensDetails({required this.modality, required this.tokenCount});
 
-  factory CandidatesTokenDetails.fromMap(Map<String, dynamic> json) {
-    return CandidatesTokenDetails(
+  factory CandidatesTokensDetails.fromMap(Map<String, dynamic> json) {
+    return CandidatesTokensDetails(
       modality: json['modality'],
       tokenCount: json['tokenCount'],
     );
@@ -79,11 +76,11 @@ class UsageMetaDataModel {
   int promptTokenCount;
   int candidatesTokenCount;
   int totalTokenCount;
-  List<PromptTokensDetailsModel> promptTokenDetails;
-  List<CandidatesTokenDetails> candidatesTokensDetails;
+  List<PromptTokensDetailsModel> promptTokensDetails;
+  List<CandidatesTokensDetails> candidatesTokensDetails;
 
   UsageMetaDataModel({
-    required this.promptTokenDetails,
+    required this.promptTokensDetails,
     required this.candidatesTokenCount,
     required this.totalTokenCount,
     required this.promptTokenCount,
@@ -91,52 +88,50 @@ class UsageMetaDataModel {
   });
 
   factory UsageMetaDataModel.fromMap(Map<String, dynamic> json) {
-    List<PromptTokensDetailsModel> promptTokenDetails = [];
-    List<CandidatesTokenDetails> candidatesTokenDetails = [];
+    List<PromptTokensDetailsModel> promptTokensDetails = [];
+    List<CandidatesTokensDetails> candidatesTokenDetails = [];
 
-    for (Map<String, dynamic> eachPrompt in json['promptTokenDetails']) {
-      promptTokenDetails.add(PromptTokensDetailsModel.fromMap(eachPrompt));
+    for (Map<String, dynamic> eachPrompt in json['promptTokensDetails']) {
+      promptTokensDetails.add(PromptTokensDetailsModel.fromMap(eachPrompt));
     }
-    for (Map<String, dynamic> json in json['candidatesTokenDetails']) {
-      candidatesTokenDetails.add(CandidatesTokenDetails.fromMap(json));
+    for (Map<String, dynamic> json in json['candidatesTokensDetails']) {
+      candidatesTokenDetails.add(CandidatesTokensDetails.fromMap(json));
     }
     return UsageMetaDataModel(
-      promptTokenDetails: promptTokenDetails,
+      promptTokensDetails: promptTokensDetails,
       candidatesTokenCount: json['candidatesTokenCount'],
       totalTokenCount: json['totalTokenCount'],
       promptTokenCount: json['promptTokenCount'],
-      candidatesTokensDetails: json['candidatesTokensDetails'],
+      candidatesTokensDetails: candidatesTokenDetails,
     );
   }
 }
 
 class ResponseDataModel {
   List<CandidatesModel> candidates;
-  List<UsageMetaDataModel> usageMetadata;
+  UsageMetaDataModel usageMetadata;
   String modelVersion;
-  String responseld;
+  String responseId;
 
   ResponseDataModel({
     required this.candidates,
     required this.modelVersion,
-    required this.responseld,
+    required this.responseId,
     required this.usageMetadata,
   });
 
   factory ResponseDataModel.fromMap(Map<String, dynamic> json) {
     List<CandidatesModel> candidates = [];
-    List<UsageMetaDataModel> usageMetadata = [];
+
     for (Map<String, dynamic> json in json['candidates']) {
       candidates.add(CandidatesModel.fromMap(json));
     }
-    for (Map<String, dynamic> json in json['usageMetadata']) {
-      usageMetadata.add(UsageMetaDataModel.fromMap(json));
-    }
+
     return ResponseDataModel(
       candidates: candidates,
       modelVersion: json['modelVersion'],
-      responseld: json['responseld'],
-      usageMetadata: usageMetadata,
+      responseId: json['responseId'],
+      usageMetadata: UsageMetaDataModel.fromMap(json['usageMetadata']),
     );
   }
 }
