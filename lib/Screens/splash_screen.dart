@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xff000613),
+      backgroundColor: Color(0xfffefaf2),
       body: Center(
         child: FadeInImage(
           placeholder: AssetImage("assets/images/black.png"),
