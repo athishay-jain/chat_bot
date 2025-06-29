@@ -9,10 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
 class ResponseBloc extends Bloc<ResponseEvent,ResponseState>{
-  ResponseBloc() : super(ResponseInitialState()){
+  ApiHelper api;
+  ResponseBloc({required this.api}) : super(ResponseInitialState()){
+
     on<GetResponseEvent>((state,emit)async{
       emit(ResponseLoadingState());
-ApiHelper api= ApiHelper();
 ResponseDataModel data = await api.getApi(question: state.question);
 if(data!=null){
   String aiResponse = data.candidates[0].content.parts[0].text;

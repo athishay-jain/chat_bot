@@ -1,70 +1,66 @@
 import 'dart:convert';
-
-import 'package:chat_bot/Data/offline/Database/dbhelper.dart';
 import 'package:http/http.dart' as http;
-import 'package:sqflite/sqflite.dart';
-
 import '../model/chat_model.dart';
 
 class ApiHelper {
-  List<Map<String, dynamic>> responseData = [];
-  Set<Map<String, dynamic>> allChats = {};
-  Dbhelper dbhelper = Dbhelper.getInstances();
-
-  void feathData() async {
-    responseData = await dbhelper.getData();
-    for (Map<String, dynamic>eachData in responseData) {
-      allChats.add({
-        "role": "user",
-        "parts": [
-          {
-            "text": eachData[Dbhelper.table_question]
-          }
-        ]
-      });
-      allChats.add({
-        "role": "model",
-        "parts": [
-          {
-            "text": eachData[Dbhelper.table_response]
-          }
-        ]
-      });
-    }
-  }
-
-  void addData({required String question, required String response}) {
-    dbhelper.addResponse(question: question, response: response);
-  }
-
+  // Maintain full chat history
+  List<Map<String, dynamic>> allChats = [];
+ApiHelper._();
+ static ApiHelper getApiHelper () => ApiHelper._();
   Future<dynamic> getApi({required String question}) async {
+    // Add the user's message to the chat history
+    allChats.add({
+      "role": "user",
+      "parts": [
+        {"text": question}
+      ]
+    });
 
-    feathData();
-    print(responseData);
+    print("Chat history being sent: $allChats");
+
     String url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCVo3m1oshBMbkzuD8DzhUVotOC48I-LAM";
 
+    Map<String, dynamic> allChatData = {
+      "system_instruction": {
+        "parts": [
+          {
+            "text":
+            "You are Zentra, an AI assistant. The user's name is Athishay. Remember user facts from the conversation and respond helpfully."
+          }
+        ]
+      },
+      "contents": allChats,
+    };
+
+    // FIX: Add headers!
     http.Response res = await http.post(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body:responseData.isNotEmpty? jsonEncode({
-        "contents": [responseData],
-      }):jsonEncode({
-        "contents":[
-          {
-            "parts": [
-              {"text": "$question"},
-            ],
-          },
-        ],
-      })
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(allChatData),
     );
+
     if (res.statusCode == 200) {
       dynamic data = jsonDecode(res.body);
-      print(data["candidates"][0]["content"]['parts'][0]["text"]);
-      addData(question: question, response: data["candidates"][0]["content"]['parts'][0]["text"]);
+
+      // Extract model reply safely
+      String replyText = data["candidates"][0]["content"]["parts"][0]["text"];
+
+      // Add model's reply to chat history
+      allChats.add({
+        "role": "model",
+        "parts": [
+          {"text": replyText}
+        ]
+      });
+
+      print("Model response: $replyText");
+
       return ResponseDataModel.fromMap(data);
     } else {
+      print("API Error: ${res.statusCode} - ${res.body}");
       return null;
     }
   }

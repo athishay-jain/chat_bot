@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:chat_bot/Custom%20widgets/botmessage.dart';
 import 'package:chat_bot/Data/online/Bloc/response_bloc.dart';
 import 'package:chat_bot/Data/online/Bloc/response_event.dart';
 import 'package:chat_bot/Data/online/Bloc/response_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:lottie/lottie.dart';
@@ -25,6 +27,7 @@ List<String> tempSender = [];
 List<String> tempReciver = [];
 List<String> sender = [];
 List<String> reciver = [];
+final baseTextStyle = TextStyle(color: Color(0xffEAEAEA), fontFamily: "Exo2");
 
 TextEditingController textbox = TextEditingController();
 List<Map<String, dynamic>> mes = mesg.reversed.toList();
@@ -57,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBody: true,
       backgroundColor: Color(0xff0D0D0D),
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: Image.asset("assets/images/logo_horizontal.jpg", scale: 4),
         backgroundColor: Color(0xff010717),
       ),
@@ -67,129 +71,177 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: sender.length,
               reverse: true,
               itemBuilder: (_, index) {
-                print("on taped on the $index");
                 return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        print("on taped on the $index");
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Spacer(),
-                          Flexible(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 16,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFF1B1F27),
-                                    Color(0xFF0D0F12),
-                                  ],
-                                ),
-                                border: Border.all(color: Colors.cyanAccent),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.cyanAccent.withAlpha(127),
-                                    blurRadius: 15,
-                                    spreadRadius: 1,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topLeft: Radius.circular(20),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  sender.reversed.toList()[index],
-                                  style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
-                                ),
-                              ),
-                            ),
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: 8,
+                        right: 16,
+                        bottom: 8,
+                        left: 120,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF1B1F27), Color(0xFF0D0F12)],
+                        ),
+                        border: Border.all(color: Colors.cyanAccent),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyanAccent.withAlpha(127),
+                            blurRadius: 15,
+                            spreadRadius: 1,
+                            offset: Offset(0, 0),
                           ),
                         ],
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                          topLeft: Radius.circular(20),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          sender.reversed.toList()[index],
+                          style: TextStyle(
+                            color: Color(0xffEAEAEA),
+                            fontFamily: "Exo2",
+                          ),
+                        ),
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 16,
+
+                    Align(
+                      alignment: Alignment(-1, 0),
+                      child: Container(
+                        margin: EdgeInsets.only(
+                          top: 8,
+                          bottom: 8,
+                          right: 16,
+                          left: 16,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF1B1F27), Color(0xFF0D0F12)],
+                          ),
+                          border: Border.all(color: Colors.deepPurpleAccent),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.deepPurpleAccent.withAlpha(127),
+                              blurRadius: 15,
+                              spreadRadius: 1,
+                              offset: Offset(0, 0),
                             ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [Color(0xFF1B1F27), Color(0xFF0D0F12)],
-                              ),
-                              border: Border.all(
-                                color: Colors.deepPurpleAccent,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.deepPurpleAccent.withAlpha(127),
-                                  blurRadius: 15,
-                                  spreadRadius: 1,
-                                  offset: Offset(0, 0),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                                topLeft: Radius.circular(20),
-                              ),
-                            ),
-                            child: Center(
-                              child: reciver.reversed.toList()[index] == "Loading..."
-                                  ? Row(
+                          ],
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                            topLeft: Radius.circular(20),
+                          ),
+                        ),
+                        child: reciver.reversed.toList()[index] == "Loading..."
+                            ? Row(
                                 mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
                                     "Zentra is thinking",
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xffEAEAEA),
-                                        fontFamily: "Exo2"),
+                                      fontSize: 14,
+                                      color: Color(0xffEAEAEA),
+                                      fontFamily: "Exo2",
+                                    ),
                                   ),
+                                  SizedBox(width: 5),
                                   Lottie.asset("assets/lottie/loading.json"),
                                 ],
                               )
-                                  : RichText(
-                                text: TextSpan(
-                                  style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
-                                  children: parseCustomMarkdown(
-                                    reciver.reversed.toList()[index],
+                            : MarkdownBody(
+                                data: reciver.reversed.toList()[index],
+                                selectable: true,
+                                styleSheet: MarkdownStyleSheet(
+                                  a: baseTextStyle.copyWith(
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  p: baseTextStyle,
+                                  code: baseTextStyle.copyWith(
+                                    backgroundColor: Colors.black12,
+                                    fontFamily: 'Courier',
+                                  ),
+                                  codeblockDecoration: BoxDecoration(
+                                    color: const Color(0xFF1F1F1F),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Colors.deepPurpleAccent
+                                          .withOpacity(0.3),
+                                    ),
+                                  ),
+                                  h1: baseTextStyle.copyWith(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  h2: baseTextStyle.copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  h3: baseTextStyle.copyWith(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  h4: baseTextStyle.copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  h5: baseTextStyle.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  h6: baseTextStyle.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  em: baseTextStyle.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  strong: baseTextStyle.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  blockquote: baseTextStyle.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: Color(0xffCCCCCC),
+                                  ),
+                                  listBullet: baseTextStyle,
+                                  listIndent: 24.0,
+                                  listBulletPadding: EdgeInsets.only(right: 8),
+                                  tableHead: baseTextStyle.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  tableBody: baseTextStyle,
+                                  checkbox: baseTextStyle,
+                                  horizontalRuleDecoration: BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(
+                                        width: 1.0,
+                                        color: Color(0xffEAEAEA),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-
                   ],
                 );
               },
@@ -199,119 +251,67 @@ class _HomeScreenState extends State<HomeScreen> {
             /*List<String> sender = state.questions;
           List<String> reciver = state.response;*/
             reciver[reciver.length - 1] = state.response;
-            print(sender);
-            print(reciver);
             return ListView.builder(
               controller: chatScrollController,
               itemCount: sender.length,
               reverse: true,
               itemBuilder: (_, index) {
-                print("on taped on the $index");
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        print("on taped on the $index");
-                      },
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: 8,
+                        right: 16,
+                        bottom: 8,
+                        left: 120,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF1B1F27), Color(0xFF0D0F12)],
+                        ),
+                        border: Border.all(color: Colors.cyanAccent),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyanAccent.withAlpha(127),
+                            blurRadius: 15,
+                            spreadRadius: 1,
+                            offset: Offset(0, 0),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                          topLeft: Radius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        sender.reversed.toList()[index],
+                        style: TextStyle(
+                          color: Color(0xffEAEAEA),
+                          fontFamily: "Exo2",
+                        ),
+                        //    textAlign: TextAlign.end,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment(-1, 0),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Spacer(),
                           Flexible(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 16,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFF1B1F27),
-                                    Color(0xFF0D0F12),
-                                  ],
-                                ),
-                                border: Border.all(color: Colors.cyanAccent),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.cyanAccent.withAlpha(127),
-                                    blurRadius: 15,
-                                    spreadRadius: 1,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topLeft: Radius.circular(20),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  sender.reversed.toList()[index],
-                                  style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
-                                ),
-                              ),
+                            child: BotMessageWidget(
+                              message: reciver.reversed.toList()[index],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 16,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [Color(0xFF1B1F27), Color(0xFF0D0F12)],
-                              ),
-                              border: Border.all(
-                                color: Colors.deepPurpleAccent,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.deepPurpleAccent.withAlpha(127),
-                                  blurRadius: 15,
-                                  spreadRadius: 1,
-                                  offset: Offset(0, 0),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                                topLeft: Radius.circular(20),
-                              ),
-                            ),
-                            child: Center(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
-                                  children: parseCustomMarkdown(
-                                    reciver.reversed.toList()[index],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 );
@@ -320,20 +320,24 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return Center(
             child: Text(
-              "Welcome To Chat Bot",
-              style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2",fontWeight: FontWeight.bold,fontSize: 30),
+              "Welcome To Zentra",
+              style: TextStyle(
+                color: Color(0xffEAEAEA),
+                fontFamily: "Exo2",
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
             ),
           );
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom:20 ,left: 15,right: 15),
+        padding: const EdgeInsets.only(bottom: 20, left: 15, right: 15),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
             child: Container(
-              height: 90,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
@@ -345,119 +349,156 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               // color: Color(0xff010717),
-              child: Row(
-                children: [
-                  SizedBox(width: 20),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.add_rounded,
-                      size: 30,
-                      color: Colors.deepPurpleAccent,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: [
+                    SizedBox(width: 20),
+                    InkWell(
+                      onTap: () {},
+                      child: Icon(
+                        Icons.add_rounded,
+                        size: 30,
+                        color: Colors.deepPurpleAccent,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    height: 45,
-                    width: 250,
-                    child: TextFormField(
-                      controller: textbox,
-                      onTap: () {
-                        if (chatScrollController.hasClients) {
-                          final position =
-                              chatScrollController.position.minScrollExtent;
-                          chatScrollController.jumpTo(position);
-                        }
-                        chatScrollController.animateTo(
-                          chatScrollController.position.minScrollExtent,
-                          duration: Duration(seconds: 1),
-                          curve: Curves.easeOut,
-                        );
-                      },
-                      style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
-                      decoration: InputDecoration(
-                        hint: Text(
-                          "Ask anything",
-                          style: TextStyle(color: Color(0xffEAEAEA),fontFamily: "Exo2"),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextFormField(
+                        maxLines: null,
+                        expands: false,
+                        controller: textbox,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        onTap: () {
+                          chatScrollController.animateTo(
+                            chatScrollController.position.minScrollExtent,
+                            duration: Duration(seconds: 1),
+                            curve: Curves.easeOut,
+                          );
+                        },
+                        style: TextStyle(
+                          color: Color(0xffEAEAEA),
+                          fontFamily: "Exo2",
                         ),
-                        fillColor: Color(0xff09101b),
-                        filled: true,
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: Colors.cyanAccent,
+                        //   maxLines: null,
+                        //   expands: false,
+                        minLines: 1,
+                        decoration: InputDecoration(
+                          hint: Text(
+                            "Ask anything",
+                            style: TextStyle(
+                              color: Color(0xffEAEAEA),
+                              fontFamily: "Exo2",
+                            ),
                           ),
-                        ),
-
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: Colors.cyanAccent.withAlpha(100),
+                          fillColor: Color(0xff09101b),
+                          filled: true,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Colors.cyanAccent,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Colors.cyanAccent.withAlpha(100),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 20),
-                  InkWell(
-                    onTap: () {
-                      sender.add(textbox.text);
-                      reciver.add("Loading...");
-                      context.read<ResponseBloc>().add(
-                        GetResponseEvent(question: textbox.text),
-                      );
-                      textbox.clear();
-                      FocusScope.of(context).unfocus();
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: Color(0xff06111a),
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: textbox.text.isEmpty
+                          ? null
+                          : () {
+                              sender.add(textbox.text);
+                              reciver.add("Loading...");
+                              context.read<ResponseBloc>().add(
+                                GetResponseEvent(question: textbox.text),
+                              );
+                              textbox.clear();
+                              FocusScope.of(context).unfocus();
+                            },
                       child: Icon(
                         Icons.send,
                         size: 30,
-                        color: Color(0xff3fdee9),
+                        color: textbox.text.isEmpty
+                            ? Colors.grey
+                            : Color(0xff3fdee9),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(width: 15),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  List<TextSpan> parseCustomMarkdown(String input) {
-    List<TextSpan> spans = [];
-
-    // Handle bold (**text**)
-    final boldRegex = RegExp(r'\*\*(.*?)\*\*');
-    input = input.replaceAllMapped(boldRegex, (match) {
-      spans.add(
-        TextSpan(
-          text: match.group(1),
-          style: TextStyle(fontWeight: FontWeight.bold),
+      drawer: Drawer(
+        backgroundColor: Color(0xff06111a),
+        width: 250,
+        child: Column(
+          children: [
+            SizedBox(height: 50),
+            Text(
+              "Chats history",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Exo2",
+              ),
+            ),
+            SizedBox(height: 20),
+            OutlinedButton(
+              onPressed: () {},
+              style: OutlinedButton.styleFrom(maximumSize: Size(180, 100)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "New Chat",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontFamily: "Exo2",
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Icon(Icons.add_circle_rounded, color: Colors.white, size: 23),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 5,
+                itemBuilder: (_, index) {
+                  return ListTile(
+                    title: Text(
+                      "Testing Chat with overflow",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Exo2",
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.clip,
+                      maxLines: 1,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-      );
-      return '\u0000'; // placeholder
-    });
-
-    // Handle points (* text)
-    final pointRegex = RegExp(r'\* (.*?)(?=,|$)');
-    input = input.replaceAllMapped(pointRegex, (match) {
-      spans.add(TextSpan(text: '\n• ${match.group(1)}', style: TextStyle()));
-      return '\u0000';
-    });
-
-    // Add remaining normal text
-    for (var part in input.split('\u0000')) {
-      if (part.trim().isNotEmpty) {
-        spans.add(TextSpan(text: part));
-      }
-    }
-
-    return spans;
+      ),
+    );
   }
 }
